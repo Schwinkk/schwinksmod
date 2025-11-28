@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.example.yourmodid.mixin", // Your Mixin package
+  "compatibilityLevel": "JAVA_8", // Or higher, depending on your project
+  "mixins": [
+    "ExampleMixin" // Your Mixin class name
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
