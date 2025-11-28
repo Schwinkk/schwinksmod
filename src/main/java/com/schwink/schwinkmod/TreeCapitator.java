@@ -1,5 +1,6 @@
 package com.schwink.schwinkmod;
 
+import com.schwink.schwinkmod.mixin.HitMarkerMixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,6 +85,8 @@ public class TreeCapitator {
 
         @SubscribeEvent
         public static void OnBlockBreak(BlockEvent.BreakEvent event) {
+
+            HitMarkerMixin.HitMarkerInitializer();
 
             var state = event.getState();
             if (!isBlockLog(state)) {
