@@ -1,10 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.example.yourmodid.mixin", // Your Mixin package
-  "compatibilityLevel": "JAVA_8", // Or higher, depending on your project
+  "package": "com.schwink.schwinkmod.mixin",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ExampleMixin" // Your Mixin class name
+    "TestMixin"
   ],
   "injectors": {
     "defaultRequire": 1
