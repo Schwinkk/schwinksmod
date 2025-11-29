@@ -86,8 +86,6 @@ public class TreeCapitator {
         @SubscribeEvent
         public static void OnBlockBreak(BlockEvent.BreakEvent event) {
 
-            HitMarkerMixin.HitMarkerInitializer();
-
             var state = event.getState();
             if (!isBlockLog(state)) {
                 return;
