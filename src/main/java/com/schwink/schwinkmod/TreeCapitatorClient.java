@@ -11,9 +11,9 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
-@Mod(value = TreeCapitator.MODID, dist = Dist.CLIENT)
+@Mod(value = ModMainClass.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-@EventBusSubscriber(modid = TreeCapitator.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ModMainClass.MODID, value = Dist.CLIENT)
 public class TreeCapitatorClient {
     public TreeCapitatorClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
@@ -25,7 +25,7 @@ public class TreeCapitatorClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
-        TreeCapitator.LOGGER.info("HELLO FROM CLIENT SETUP");
-        TreeCapitator.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        ModMainClass.LOGGER.info("HELLO FROM CLIENT SETUP");
+        ModMainClass.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 }
