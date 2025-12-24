@@ -1,5 +1,6 @@
 package com.schwink.schwinkmod.mixin;
 
+import com.schwink.schwinkmod.common.Config;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,28 +11,24 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.schwink.schwinkmod.HitMarkerMixinData.alphaDecreaseSpeed;
-import static com.schwink.schwinkmod.HitMarkerMixinData.a;
-import static com.schwink.schwinkmod.HitMarkerMixinData.color;
+import static com.schwink.schwinkmod.client.HitMarkerMixinData.*;
 
 @Mixin(Gui.class)
 public class HitMarkerMixin {
 
-    private static final ResourceLocation HIT_ICON = ResourceLocation.fromNamespaceAndPath("schwinkmod", "textures/gui/hit_marker.png");
-
     @Inject(method = "render", at = @At("TAIL"))
     public void renderHitMarker(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci){
 
-        if (a == 0){return;}
+        if (alpha == 0){return;}
 
-        if (a - alphaDecreaseSpeed <= 0){
-            a = 0;
+        if (alpha - alphaDecreaseSpeed <= 0){
+            alpha = 0;
         }
         else {
-            a = a - alphaDecreaseSpeed;
+            alpha = alpha - alphaDecreaseSpeed;
         }
 
-        int color1 = (a << 24) | (color & 0x00FFFFFF);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED,HIT_ICON,guiGraphics.guiWidth()/2 - 12, guiGraphics.guiHeight()/2 - 13,0,0, 25, 25, 25, 25,color1);
+        int color1 = ((int) Math.abs(alpha - 24f)) | (color & 0x00FFFFFF);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Config.HIT_ICON,guiGraphics.guiWidth()/2 - 12, guiGraphics.guiHeight()/2 - 13,0,0, 25, 25, 25, 25,color1);
     }
 }

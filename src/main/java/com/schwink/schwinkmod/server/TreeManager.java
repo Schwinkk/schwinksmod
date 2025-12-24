@@ -1,4 +1,4 @@
-package com.schwink.schwinkmod;
+package com.schwink.schwinkmod.server;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;

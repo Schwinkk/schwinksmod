@@ -1,5 +1,6 @@
-package com.schwink.schwinkmod;
+package com.schwink.schwinkmod.server;
 
+import com.schwink.schwinkmod.common.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,7 +8,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -26,53 +27,19 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import java.util.Optional;
 
 
-@Mod(ModMainClass.MODID)
-public class ModMainClass {
-
-    public static final String MODID = "schwinkmod";
-    public static final Logger LOGGER = LogUtils.getLogger();
-    public static final TagKey<Block> LOGS_TAG = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "logs"));
-
+@Mod(Config.MODID)
+public class SchwinkModServer {
 
     @EventBusSubscriber
     public static class TreeCapitatorStarter{
 
         @SubscribeEvent
-        public static void OnBreakSpeed(PlayerEvent.BreakSpeed event) {
-
-            var state = event.getState();
-
-            if (!isBlockLog(state)) {
-                return;
-            }
-
-            Level level = event.getEntity().level();
-            Optional<BlockPos> optionalPos = event.getPosition();
-            BlockPos pos;
-            Player player = event.getEntity();
-
-
-            if (optionalPos.isPresent()){
-                pos = optionalPos.get();
-            }
-            else{
-                return;
-            }
-
-            int x = TreeManager.getTreeSize(pos, level);
-
-            if (player.getMainHandItem().getItem() instanceof AxeItem & x > 1){
-                float breakSpeedModifier = (float) Math.sqrt((double) 1 / (x * 2));
-                event.setNewSpeed(event.getOriginalSpeed() * breakSpeedModifier);
-            }
-
-        }
-
-        @SubscribeEvent
         public static void OnBlockBreak(BlockEvent.BreakEvent event) {
 
+            System.out.println("GOGOGO");
+
             var state = event.getState();
-            if (!isBlockLog(state)) {
+            if (!state.is(Config.LOGS_TAG)) {
                 return;
             }
 
@@ -85,13 +52,9 @@ public class ModMainClass {
             }
         }
 
-        private static boolean isBlockLog(BlockState state) {
-            return state.is(LOGS_TAG);
-        }
-
         @SubscribeEvent
         public static void OnEntityAttack(AttackEntityEvent event){
-            HitMarkerMixinData.a = 255;
+
         }
     }
 

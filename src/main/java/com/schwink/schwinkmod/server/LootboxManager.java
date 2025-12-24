@@ -1,4 +1,4 @@
-package com.schwink.schwinkmod;
+package com.schwink.schwinkmod.server;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;

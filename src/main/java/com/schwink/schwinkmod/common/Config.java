@@ -1,10 +1,15 @@
-package com.schwink.schwinkmod;
+package com.schwink.schwinkmod.common;
 
 import java.util.List;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import org.slf4j.Logger;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Neo's config APIs
@@ -33,4 +38,10 @@ public class Config {
     private static boolean validateItemName(final Object obj) {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
+
+    public static final ResourceLocation HIT_ICON = ResourceLocation.fromNamespaceAndPath("schwinkmod", "textures/gui/hit_marker.png");
+    public static final TagKey<Block> LOGS_TAG = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "logs"));
+
+    public static final String MODID = "schwinkmod";
+    public static final Logger LOGGER = LogUtils.getLogger();
 }
