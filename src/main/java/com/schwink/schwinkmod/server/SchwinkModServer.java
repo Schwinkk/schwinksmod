@@ -5,11 +5,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -36,15 +38,13 @@ public class SchwinkModServer {
         @SubscribeEvent
         public static void OnBlockBreak(BlockEvent.BreakEvent event) {
 
-            System.out.println("GOGOGO");
-
             var state = event.getState();
             if (!state.is(Config.LOGS_TAG)) {
                 return;
             }
 
             ServerPlayer player = (ServerPlayer) event.getPlayer();
-            Level level = (Level) event.getLevel(); // надеюсь приведение ничего не сломает))))
+            Level level = (Level) event.getLevel();
             BlockPos pos = event.getPos();
 
             if (player.getMainHandItem().getItem() instanceof AxeItem){
@@ -53,8 +53,9 @@ public class SchwinkModServer {
         }
 
         @SubscribeEvent
-        public static void OnEntityAttack(AttackEntityEvent event){
-
+        private void onLivingAttack(LivingDamageEvent event){
+            final DamageSource source = event.getEntity().getLastDamageSource();
+            if (source.getEntity().)
         }
     }
 
