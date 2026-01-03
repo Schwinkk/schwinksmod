@@ -24,7 +24,7 @@ import java.util.Optional;
 @Mod(value = Config.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = Config.MODID, value = Dist.CLIENT)
-public class TreeCapitatorClient {
+public class SchwinkModClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
@@ -32,6 +32,7 @@ public class TreeCapitatorClient {
         Config.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 
+    //decreasing breaking speed of block depending on tree size
     @SubscribeEvent
     public static void OnBreakSpeed(PlayerEvent.BreakSpeed event) {
 
@@ -60,6 +61,7 @@ public class TreeCapitatorClient {
             float breakSpeedModifier = (float) Math.sqrt((double) 1 / (x * 2));
             event.setNewSpeed(event.getOriginalSpeed() * breakSpeedModifier);
         }
-
     }
+
+
 }
