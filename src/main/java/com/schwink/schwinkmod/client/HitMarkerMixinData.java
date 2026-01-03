@@ -9,7 +9,12 @@ import net.neoforged.fml.common.Mod;
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 public class HitMarkerMixinData {
 
-    public static float alphaDecreaseSpeed = 3f;
+    public static float alphaDecreaseSpeed = 10f;
     public static int color = 0x00FFFFFF;
     public static float alpha = 0f;
+
+    public static void showHitMarker(){
+        System.out.println("ClientPayloadHandler.handleDataOnMain");
+        alpha = 255f;
+    }
 }

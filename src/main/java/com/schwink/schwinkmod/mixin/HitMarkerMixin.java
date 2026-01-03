@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,10 +26,25 @@ public class HitMarkerMixin {
             alpha = 0;
         }
         else {
-            alpha = alpha - alphaDecreaseSpeed;
+            alpha -= alphaDecreaseSpeed * deltaTracker.getGameTimeDeltaPartialTick(false);
         }
 
-        int color1 = ((int) Math.abs(alpha - 24f)) | (color & 0x00FFFFFF);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Config.HIT_ICON,guiGraphics.guiWidth()/2 - 12, guiGraphics.guiHeight()/2 - 13,0,0, 25, 25, 25, 25,color1);
+        System.out.println(alpha);
+
+        int a = Mth.clamp((int) alpha, 0, 255);
+        int color1 = (a << 24) | (color & 0x00FFFFFF);
+
+        guiGraphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                Config.HIT_ICON,
+                guiGraphics.guiWidth()/2 - 12,
+                guiGraphics.guiHeight()/2 - 13,
+                0,
+                0,
+                25,
+                25,
+                25,
+                25,
+                color1);
     }
 }

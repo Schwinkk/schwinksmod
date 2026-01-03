@@ -1,5 +1,6 @@
 package com.schwink.schwinkmod.server;
 
+import com.schwink.schwinkmod.client.ClientPayloadHandler;
 import com.schwink.schwinkmod.common.Config;
 import com.schwink.schwinkmod.common.PacketTypes;
 import net.minecraft.core.BlockPos;
@@ -48,8 +49,9 @@ public class SchwinkModServer {
     // Sending packet to client to show Hitmarker
     @SubscribeEvent
     private static void onLivingAttack(LivingDamageEvent.Post event){
-        final DamageSource source = event.getEntity().getLastDamageSource();
-        if (source!= null && source.getEntity() instanceof ServerPlayer player){
+        final DamageSource source = event.getSource();
+        if (source.getEntity() instanceof ServerPlayer){
+            System.out.println("kidaiu");
             PacketDistributor.sendToPlayer((ServerPlayer) source.getEntity(), new PacketTypes.HitData("hit"));
         }
     }
@@ -57,10 +59,10 @@ public class SchwinkModServer {
     @SubscribeEvent
     private static void registerPayload(RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
-        registrar.playBidirectional(
+        registrar.playToClient(
                 PacketTypes.HitData.TYPE,
                 PacketTypes.HitData.STREAM_CODEC,
-                ServerPayloadHandler::handleDataOnMain
+                ClientPayloadHandler::handleDataOnMain
         );
     }
 
