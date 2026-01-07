@@ -1,5 +1,6 @@
 package com.schwink.schwinkmod.server;
 
+import com.schwink.schwinkmod.server.shufflebag.ShuffleBagManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +58,7 @@ public class TreeManager {
 
             if (level.getBlockState(destroyPos).is(LOGS_TAG)){
                 tool.hurtAndBreak(1, player,InteractionHand.MAIN_HAND);
-                LootboxManager.dropItemFromTable((ServerLevel) level, destroyPos, player);
+                ShuffleBagManager.dropItemFromTable((ServerLevel) level, destroyPos, player);
             }
 
             Block.dropResources(level.getBlockState(destroyPos), level, destroyPos, level.getBlockEntity(destroyPos), player, tool);

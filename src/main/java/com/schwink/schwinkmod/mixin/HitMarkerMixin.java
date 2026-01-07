@@ -29,8 +29,6 @@ public class HitMarkerMixin {
             alpha -= alphaDecreaseSpeed * deltaTracker.getGameTimeDeltaPartialTick(false);
         }
 
-        System.out.println(alpha);
-
         int a = Mth.clamp((int) alpha, 0, 255);
         int color1 = (a << 24) | (color & 0x00FFFFFF);
 

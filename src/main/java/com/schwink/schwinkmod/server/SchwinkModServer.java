@@ -3,6 +3,7 @@ package com.schwink.schwinkmod.server;
 import com.schwink.schwinkmod.client.ClientPayloadHandler;
 import com.schwink.schwinkmod.common.Config;
 import com.schwink.schwinkmod.common.PacketTypes;
+import com.schwink.schwinkmod.server.shufflebag.ShuffleBagJsonParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,6 +24,8 @@ import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.io.IOException;
+
 
 @Mod(Config.MODID)
 @EventBusSubscriber
@@ -30,7 +33,9 @@ public class SchwinkModServer {
 
     //breaking all tree when breaking log with axe
     @SubscribeEvent
-    public static void OnBlockBreak(BlockEvent.BreakEvent event) {
+    public static void OnBlockBreak(BlockEvent.BreakEvent event) throws IOException {
+
+        ShuffleBagJsonParser.INSTANCE.parse();
 
         var state = event.getState();
         if (!state.is(Config.LOGS_TAG)) {
@@ -51,7 +56,6 @@ public class SchwinkModServer {
     private static void onLivingAttack(LivingDamageEvent.Post event){
         final DamageSource source = event.getSource();
         if (source.getEntity() instanceof ServerPlayer){
-            System.out.println("kidaiu");
             PacketDistributor.sendToPlayer((ServerPlayer) source.getEntity(), new PacketTypes.HitData("hit"));
         }
     }

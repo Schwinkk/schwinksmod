@@ -1,0 +1,13 @@
+{
+  "tree_bag": [
+    { "amount": 15, "type":"minecraft:item", "name": "minecraft:bread"},
+    { "amount": 14, "type":"minecraft:item", "name": "minecraft:redstone"},
+    { "amount": 1, "type":  "shuflle_bag", "name": "tree_jackpot_bag"}
+  ],
+
+  "tree_jackpot_bag": [
+    { "amount": 1, "type":"minecraft:item", "name": "minecraft:diamond"},
+    { "amount": 2, "type":"minecraft:item", "name": "minecraft:emerald"},
+    { "amount": 2, "type":"minecraft:item", "name": "minecraft:golden_apple"}
+  ]
+}

@@ -1,7 +1,8 @@
-package com.schwink.schwinkmod.server;
+package com.schwink.schwinkmod.server.shufflebag;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
@@ -19,8 +20,11 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Random;
 
-public class LootboxManager {
+import java.util.ArrayList;
+
+public class ShuffleBagManager {
 
     public static LootTable getLootTable(){
         LootTable.Builder tableBuilder = LootTable.lootTable();
@@ -62,4 +66,29 @@ public class LootboxManager {
             }
         }
     }
+
+    public static ArrayList<Items> arrayFromSeed(long seed, ResourceLocation lootTable) {
+        ArrayList<Items> result = new ArrayList<>();
+
+        // смотрим кол-во предметов и через for рандомим их на основе сида
+
+
+        return result;
+    }
+
+    public static long generateSeed(){
+        return Random.newSeed();
+    }
+
+    public static int getAmountInBag(String bagName){
+        int result = 0;
+
+
+
+        return result;
+    }
+
+
+
+
 }
