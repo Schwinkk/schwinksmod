@@ -1,94 +1,131 @@
 package com.schwink.schwinkmod.server.shufflebag;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import com.schwink.schwinkmod.common.Config;
+import com.schwink.schwinkmod.common.DataTypes.PlayerBagData;
+import com.schwink.schwinkmod.common.DataTypes.BagInfo;
+import com.schwink.schwinkmod.common.DataTypes.ShuffleBagEntry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.jline.utils.Log;
 import org.joml.Random;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.random.RandomGenerator;
 
 public class ShuffleBagManager {
 
-    public static LootTable getLootTable(){
-        LootTable.Builder tableBuilder = LootTable.lootTable();
+    public static final ShuffleBagManager INSTANCE = new ShuffleBagManager();
 
-        LootPool.Builder tablePool = LootPool.lootPool()
-                .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(Items.REDSTONE)
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1,3)))
-                        .setWeight(5))
-                .add(LootItem.lootTableItem(Items.DIAMOND)
-                        .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                        .setWeight(5))
-                .add(EmptyLootItem.emptyItem()
-                        .setWeight(10));
+    public void dropItemFromBag(ServerLevel level, BlockPos pos, ServerPlayer player, String bagName){
 
-        tableBuilder.withPool(tablePool);
-
-        return tableBuilder.build();
-    }
-
-
-    public static void dropItemFromTable(ServerLevel level, BlockPos pos, ServerPlayer player){
-        LootTable table = getLootTable();
-
-        ItemStack itemStack = player.getMainHandItem();
         BlockState state = level.getBlockState(pos);
 
-        LootParams params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .withParameter(LootContextParams.TOOL, itemStack)
-                .withParameter(LootContextParams.BLOCK_STATE, state)
-                .create(LootContextParamSets.BLOCK);
-        ObjectArrayList<ItemStack> items = table.getRandomItems(params);
+        ItemStack stack = pickItemFromBag(player, bagName);
 
-        for (ItemStack stack : items)
-        {
-            if(!stack.isEmpty()){
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
-            }
-        }
+        if (stack.isEmpty()) return;
+
+        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
     }
 
-    public static ArrayList<Items> arrayFromSeed(long seed, ResourceLocation lootTable) {
-        ArrayList<Items> result = new ArrayList<>();
+    private ItemStack pickItemFromBag(ServerPlayer player, String bagName){
+        ItemStack result = ItemStack.EMPTY;
+        UUID uuid = player.getUUID();
 
-        // смотрим кол-во предметов и через for рандомим их на основе сида
+        PlayerBagData playerBagData = DatabaseManager.INSTANCE.currentPlayerBags.get(uuid);
 
+        if(playerBagData == null){
+            playerBagData = generatePlayerBagData(bagName);
+        }
+
+        //Тут я понял, что как-то неправильно храню данные
+        int indexOfItem = arrayFromSeed(playerBagData.getBags().get(bagName).getSeed(),bagName)
+                .indexOf(playerBagData.getBags().get(bagName).getCount());
+
+
+        ShuffleBagEntry bagEntry =  ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName).get(indexOfItem);
+
+        if (bagEntry == null){
+            Log.error("ETO ZALET KONKRETNII");
+            return ItemStack.EMPTY;
+        }
+
+        if (bagEntry.type().equals("item")){
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("minecraft", bagEntry.name());
+            Item item = Registry.;
+            result = bagEntry.name();
+        }
+
+        if  (bagEntry.type().equals("shuffle_bag")){
+            result = pickItemFromBag(player, bagEntry.name());
+        }
+
+        // increasing count of openings, if count is bigger than size of shuffle, set shuffle to 0 and regenerate seed
+        playerBagData = increasedBagsCountData(playerBagData, bagName);
+        DatabaseManager.INSTANCE.changeBagData(uuid, playerBagData);
 
         return result;
     }
 
-    public static long generateSeed(){
+    private ArrayList<Integer> arrayFromSeed(long seed, String bagName) {
+
+        ArrayList<Integer> result = new ArrayList<>();
+        List<ShuffleBagEntry> entries = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName);
+
+        for (ShuffleBagEntry entry : entries) {
+            for (int i = 0; i < entry.amount(); i++){
+                result.add(entries.indexOf(entry));
+            }
+        }
+
+        RandomGenerator generator = new java.util.Random(seed);
+
+        Collections.shuffle(result, generator);
+
+        System.out.println(result);
+
+        return result;
+    }
+
+    private long generateSeed(){
         return Random.newSeed();
     }
 
-    public static int getAmountInBag(String bagName){
-        int result = 0;
+    private PlayerBagData generatePlayerBagData(String bagName){
+        PlayerBagData data = new PlayerBagData();
+        BagInfo bagInfo = new BagInfo();
 
+        bagInfo.setCount(0);
+        bagInfo.setSeed(generateSeed());
 
+        data.addToBags(bagName, bagInfo);
 
-        return result;
+        return data;
     }
 
+    private PlayerBagData increasedBagsCountData(PlayerBagData data, String bagName){
 
+        int currentCount = data.getBags().get(bagName).getCount();
 
+        if (currentCount >= ShuffleBagJsonParser.INSTANCE.getShuffleSize(bagName)){
+            currentCount = 0;
 
+            data.getBags().get(bagName).setSeed(generateSeed());
+            data.getBags().get(bagName).setCount(currentCount);
+        }
+        else{
+            currentCount++;
+
+            data.getBags().get(bagName).setCount(currentCount);
+        }
+
+        return data;
+    }
 }

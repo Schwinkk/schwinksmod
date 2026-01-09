@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.schwink.schwinkmod.common.Config;
+import com.schwink.schwinkmod.common.DataTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;
 import org.checkerframework.common.reflection.qual.GetClass;
@@ -21,11 +22,11 @@ public class ShuffleBagJsonParser {
 
     public static final ShuffleBagJsonParser INSTANCE = new ShuffleBagJsonParser();
 
-    public Map<String, List<ShuffleBagEntry>> bags = new HashMap<>();
+    public Map<String, List<DataTypes.ShuffleBagEntry>> bags = new HashMap<>();
 
-    // if we dont want to let player know chances from jar, we need to save config in run/config and read it.
+    // if we dont want to let player know chances from jar, we need to save config in run/config and read it with FMLPaths.
 
-    public void parse() throws IOException {
+    public void parseAllBags() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream("/data/schwinkmod/gachafiles/shufflebags.json")){
 
             if (stream == null) {
@@ -36,13 +37,30 @@ public class ShuffleBagJsonParser {
                 InputStreamReader reader = new InputStreamReader(stream);
 
                 Gson gson = new Gson();
-                Type type = new TypeToken<Map<String, List<ShuffleBagEntry>>>(){}.getType();
+                Type type = new TypeToken<Map<String, List<DataTypes.ShuffleBagEntry>>>(){}.getType();
 
                 bags = gson.fromJson(reader, type);
-
-                System.out.println(bags.get("tree_bag").getFirst().getAmount());
             }
         }
     }
+
+    public List<DataTypes.ShuffleBagEntry> getShuffleBag(String bagName){
+        return bags.get(bagName);
+    }
+
+    public int getShuffleSize(String bagName){
+
+        int result = 0;
+
+        List<DataTypes.ShuffleBagEntry> entries = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName);
+
+        for (DataTypes.ShuffleBagEntry entry : entries) {
+            result += entry.amount();
+        }
+
+        return result;
+    }
+
+
 }
 

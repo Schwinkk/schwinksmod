@@ -44,4 +44,7 @@ public class Config {
 
     public static final String MODID = "schwinkmod";
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final String LOGS_SHUFFLEBAG = "tree_bag";
+    public static final String LOGS_JACKPOT_SHUFFLEBAG = "tree_jackpot_bag";
 }

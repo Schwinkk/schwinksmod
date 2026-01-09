@@ -3,9 +3,12 @@ package com.schwink.schwinkmod.server;
 import com.schwink.schwinkmod.client.ClientPayloadHandler;
 import com.schwink.schwinkmod.common.Config;
 import com.schwink.schwinkmod.common.PacketTypes;
+import com.schwink.schwinkmod.server.shufflebag.DatabaseManager;
 import com.schwink.schwinkmod.server.shufflebag.ShuffleBagJsonParser;
+import com.schwink.schwinkmod.server.shufflebag.ShuffleBagManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -13,6 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.network.handling.ClientPayloadContext;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +28,7 @@ import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import javax.sql.ConnectionEvent;
 import java.io.IOException;
 
 
@@ -34,8 +39,6 @@ public class SchwinkModServer {
     //breaking all tree when breaking log with axe
     @SubscribeEvent
     public static void OnBlockBreak(BlockEvent.BreakEvent event) throws IOException {
-
-        ShuffleBagJsonParser.INSTANCE.parse();
 
         var state = event.getState();
         if (!state.is(Config.LOGS_TAG)) {
@@ -75,10 +78,19 @@ public class SchwinkModServer {
 
     }
 
-
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public static void onServerStarting(ServerStartingEvent event) {
+    public static void onServerStarting(ServerStartingEvent event) throws IOException {
+        ShuffleBagJsonParser.INSTANCE.parseAllBags();
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        DatabaseManager.INSTANCE.saveAllDataToDb();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin() {
 
     }
 }
