@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.network.handling.ClientPayloadContext;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -38,7 +39,7 @@ public class SchwinkModServer {
 
     //breaking all tree when breaking log with axe
     @SubscribeEvent
-    public static void OnBlockBreak(BlockEvent.BreakEvent event) throws IOException {
+    public static void OnBlockBreak(BlockEvent.BreakEvent event) {
 
         var state = event.getState();
         if (!state.is(Config.LOGS_TAG)) {
@@ -84,13 +85,17 @@ public class SchwinkModServer {
         ShuffleBagJsonParser.INSTANCE.parseAllBags();
     }
 
+
+    // this is test method
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
+        DatabaseManager.INSTANCE.INIT(event.getEntity().getUUID(), ShuffleBagManager.INSTANCE.generatePlayerBagData(Config.LOGS_SHUFFLEBAG));
+    }
+
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
         DatabaseManager.INSTANCE.saveAllDataToDb();
     }
 
-    @SubscribeEvent
-    public static void onPlayerJoin() {
-
-    }
+    //TODO on join and disconnect of player add him to cache
 }

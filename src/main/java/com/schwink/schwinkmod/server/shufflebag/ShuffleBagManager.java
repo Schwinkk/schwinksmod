@@ -5,7 +5,9 @@ import com.schwink.schwinkmod.common.DataTypes.PlayerBagData;
 import com.schwink.schwinkmod.common.DataTypes.BagInfo;
 import com.schwink.schwinkmod.common.DataTypes.ShuffleBagEntry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,8 +28,6 @@ public class ShuffleBagManager {
 
     public void dropItemFromBag(ServerLevel level, BlockPos pos, ServerPlayer player, String bagName){
 
-        BlockState state = level.getBlockState(pos);
-
         ItemStack stack = pickItemFromBag(player, bagName);
 
         if (stack.isEmpty()) return;
@@ -44,13 +44,18 @@ public class ShuffleBagManager {
         if(playerBagData == null){
             playerBagData = generatePlayerBagData(bagName);
         }
+        if (playerBagData.getBags().get(bagName) == null){
+            playerBagData = generatePlayerBagData(bagName);
+        }
 
-        //Тут я понял, что как-то неправильно храню данные
-        int indexOfItem = arrayFromSeed(playerBagData.getBags().get(bagName).getSeed(),bagName)
-                .indexOf(playerBagData.getBags().get(bagName).getCount());
+        BagInfo currentBag = playerBagData.getBags().get(bagName);
+
+        // now we find array of items, after we get current item from shuffle
+        int indexOfItem = arrayFromSeed(currentBag.getSeed(),bagName)
+                .get(currentBag.getCount());
 
 
-        ShuffleBagEntry bagEntry =  ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName).get(indexOfItem);
+        ShuffleBagEntry bagEntry = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName).get(indexOfItem);
 
         if (bagEntry == null){
             Log.error("ETO ZALET KONKRETNII");
@@ -58,13 +63,22 @@ public class ShuffleBagManager {
         }
 
         if (bagEntry.type().equals("item")){
-            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("minecraft", bagEntry.name());
-            Item item = Registry.;
-            result = bagEntry.name();
+            ResourceLocation location = ResourceLocation.tryParse(bagEntry.name());
+
+            if (location == null){
+                Log.error("item name in JSON is INCORRECT");
+
+                result = ItemStack.EMPTY;
+            }
+            else {
+                Item item = BuiltInRegistries.ITEM.getValue(location);
+                result = new ItemStack(item);
+            }
         }
 
         if  (bagEntry.type().equals("shuffle_bag")){
             result = pickItemFromBag(player, bagEntry.name());
+            return result;
         }
 
         // increasing count of openings, if count is bigger than size of shuffle, set shuffle to 0 and regenerate seed
@@ -98,7 +112,7 @@ public class ShuffleBagManager {
         return Random.newSeed();
     }
 
-    private PlayerBagData generatePlayerBagData(String bagName){
+    public PlayerBagData generatePlayerBagData(String bagName){
         PlayerBagData data = new PlayerBagData();
         BagInfo bagInfo = new BagInfo();
 
@@ -114,7 +128,7 @@ public class ShuffleBagManager {
 
         int currentCount = data.getBags().get(bagName).getCount();
 
-        if (currentCount >= ShuffleBagJsonParser.INSTANCE.getShuffleSize(bagName)){
+        if (currentCount >= ShuffleBagJsonParser.INSTANCE.getShuffleSize(bagName) - 1){
             currentCount = 0;
 
             data.getBags().get(bagName).setSeed(generateSeed());

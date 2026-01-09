@@ -1,6 +1,8 @@
 package com.schwink.schwinkmod.server.shufflebag;
 
 import com.schwink.schwinkmod.common.DataTypes;
+import com.schwink.schwinkmod.common.DataTypes.ShuffleBagEntry;
+import com.schwink.schwinkmod.common.DataTypes.PlayerBagData;
 import net.minecraft.server.level.ServerPlayer;
 import org.jline.utils.Log;
 
@@ -12,14 +14,14 @@ public class DatabaseManager {
 
     public static final DatabaseManager INSTANCE = new DatabaseManager();
 
-    public Map<UUID, DataTypes.PlayerBagData> currentPlayerBags = new ConcurrentHashMap<>();
+    public Map<UUID, PlayerBagData> currentPlayerBags = new ConcurrentHashMap<>();
 
     public void loadPlayerInCache(UUID uuid) {
 
         // TODO loading bagData from db
-        DataTypes.PlayerBagData playerBagData;
+        PlayerBagData playerBagData;
 
-        currentPlayerBags.put(uuid, playerBagData);
+        //currentPlayerBags.put(uuid, playerBagData);
     }
 
     public void clearPlayerFromCache(UUID uuid) {
@@ -44,13 +46,12 @@ public class DatabaseManager {
         });
     }
 
-    public void changeBagData(UUID uuid, DataTypes.PlayerBagData playerBagData) {
+    public void changeBagData(UUID uuid, PlayerBagData playerBagData) {
         playerBagData.setDirty(true);
         currentPlayerBags.replace(uuid, playerBagData);
     }
 
-
-
-
-
+    public void INIT(UUID uuid, PlayerBagData playerBagData){
+        currentPlayerBags.put(uuid, playerBagData);
+    }
 }
