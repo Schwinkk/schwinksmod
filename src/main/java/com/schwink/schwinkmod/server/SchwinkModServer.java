@@ -89,7 +89,7 @@ public class SchwinkModServer {
     // this is test method
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
-        DatabaseManager.INSTANCE.INIT(event.getEntity().getUUID(), ShuffleBagManager.INSTANCE.generatePlayerBagData(Config.LOGS_SHUFFLEBAG));
+        DatabaseManager.INSTANCE.INIT(event.getEntity().getUUID(), ShuffleBagManager.INSTANCE.generateBagData(Config.LOGS_SHUFFLEBAG, null));
     }
 
     @SubscribeEvent

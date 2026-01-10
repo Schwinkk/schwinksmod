@@ -41,11 +41,8 @@ public class ShuffleBagManager {
 
         PlayerBagData playerBagData = DatabaseManager.INSTANCE.currentPlayerBags.get(uuid);
 
-        if(playerBagData == null){
-            playerBagData = generatePlayerBagData(bagName);
-        }
-        if (playerBagData.getBags().get(bagName) == null){
-            playerBagData = generatePlayerBagData(bagName);
+        if (playerBagData == null || playerBagData.getBags().get(bagName) == null){
+            playerBagData = generateBagData(bagName, playerBagData);
         }
 
         BagInfo currentBag = playerBagData.getBags().get(bagName);
@@ -78,7 +75,6 @@ public class ShuffleBagManager {
 
         if  (bagEntry.type().equals("shuffle_bag")){
             result = pickItemFromBag(player, bagEntry.name());
-            return result;
         }
 
         // increasing count of openings, if count is bigger than size of shuffle, set shuffle to 0 and regenerate seed
@@ -112,8 +108,12 @@ public class ShuffleBagManager {
         return Random.newSeed();
     }
 
-    public PlayerBagData generatePlayerBagData(String bagName){
-        PlayerBagData data = new PlayerBagData();
+    public PlayerBagData generateBagData(String bagName, PlayerBagData data){
+
+        if (data == null){
+            data = new PlayerBagData();
+        }
+
         BagInfo bagInfo = new BagInfo();
 
         bagInfo.setCount(0);
