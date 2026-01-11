@@ -6,6 +6,9 @@ import com.schwink.schwinkmod.common.DataTypes.PlayerBagData;
 import net.minecraft.server.level.ServerPlayer;
 import org.jline.utils.Log;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +54,8 @@ public class DatabaseManager {
         currentPlayerBags.replace(uuid, playerBagData);
     }
 
-    public void INIT(UUID uuid, PlayerBagData playerBagData){
+    public void initDB(UUID uuid, PlayerBagData playerBagData) throws SQLException {
+        Connection connect = DriverManager.getConnection("jbdc:sqlite:modDB.db");
         currentPlayerBags.put(uuid, playerBagData);
     }
 }
