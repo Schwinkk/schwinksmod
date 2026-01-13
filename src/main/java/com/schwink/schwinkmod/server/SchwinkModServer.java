@@ -99,7 +99,7 @@ public class SchwinkModServer {
         }
 
         ShuffleBagJsonParser.INSTANCE.parseAllBags();
-        DatabaseManager.INSTANCE.initDB(fileDir);
+        DatabaseManager.INSTANCE.initDB(worldDir);
     }
 
     @SubscribeEvent

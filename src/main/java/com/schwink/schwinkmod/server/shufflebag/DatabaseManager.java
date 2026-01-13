@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jline.utils.Log;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.Map;
 import java.util.UUID;
@@ -130,29 +131,22 @@ public class DatabaseManager {
         currentPlayerBags.replace(uuid, playerBagData);
     }
 
-    public void initDB(File worldDir) throws SQLException {
+    public void initDB(Path worldDir) throws SQLException {
 
-        if (!worldDir.exists()){
-            boolean created = worldDir.mkdirs();
-            if (!created){
-                Log.warn("CANT MAKE FILE");
-            }
-        } else
-        {
-            Log.warn("EXITTT");
-        }
+        try{
+            Class.forName("org.sqlite.JDBC",true, this.getClass().getClassLoader());
 
-        try {
-            Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:" + worldDir.getAbsolutePath() + "/modDB.db";
+            Path dbPath = worldDir.resolve("modDB.db");
+
+            String url = "jdbc:sqlite:" + dbPath.toAbsolutePath().toString();
             connection = DriverManager.getConnection(url);
 
             Log.info("Connected to database successfully!");
-
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.err.println("NO CONNECTION");
+            Log.error("LOLL");
+            throw new RuntimeException(e);
         }
+
 
         String sqlCode = """
             CREATE TABLE IF NOT EXISTS player_shufflebags (

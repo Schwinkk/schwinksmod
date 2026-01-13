@@ -18,7 +18,13 @@ version = mod_version
 group = mod_group_id
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    mavenLocal()
+    maven {
+        name = 'NeoForged'
+        url = 'https://maven.neoforged.net/releases'
+    }
+
+    mavenCentral()
 }
 
 base {
@@ -113,8 +119,12 @@ configurations {
 
 dependencies {
 
-    implementation "org.xerial:sqlite-jdbc:3.45.1.0"
-    jarJar(group: 'org.xerial', name: 'sqlite-jdbc', version: '[3.45.1.0,)')
+    def sqliteVersion = '3.45.1.0'
+
+    implementation "org.xerial:sqlite-jdbc:${sqliteVersion}"
+    jarJar "org.xerial:sqlite-jdbc:${sqliteVersion}"
+
+    localRuntime "org.xerial:sqlite-jdbc:${sqliteVersion}"
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -176,7 +186,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            url = "file://${project.projectDir}/repo"
         }
     }
 }
