@@ -112,6 +112,10 @@ configurations {
 }
 
 dependencies {
+
+    implementation "org.xerial:sqlite-jdbc:3.45.1.0"
+    jarJar(group: 'org.xerial', name: 'sqlite-jdbc', version: '[3.45.1.0,)')
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -137,6 +141,9 @@ dependencies {
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+
+
+
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,

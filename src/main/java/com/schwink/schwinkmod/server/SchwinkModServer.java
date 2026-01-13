@@ -10,8 +10,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.network.handling.ClientPayloadContext;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -30,7 +32,10 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import javax.sql.ConnectionEvent;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.sql.SQLException;
 
 
 @Mod(Config.MODID)
@@ -81,15 +86,30 @@ public class SchwinkModServer {
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public static void onServerStarting(ServerStartingEvent event) throws IOException {
+    public static void onServerStarting(ServerStartingEvent event) throws IOException, SQLException {
+
+        Path worldDir = event.getServer()
+                             .getWorldPath(LevelResource.ROOT)
+                             .resolve(Config.MODID);
+
+        File fileDir = worldDir.toFile();
+
+        if (!fileDir.exists()){
+            fileDir.mkdirs();
+        }
+
         ShuffleBagJsonParser.INSTANCE.parseAllBags();
+        DatabaseManager.INSTANCE.initDB(fileDir);
     }
 
-
-    // this is test method
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
-        DatabaseManager.INSTANCE.INIT(event.getEntity().getUUID(), ShuffleBagManager.INSTANCE.generateBagData(Config.LOGS_SHUFFLEBAG, null));
+        DatabaseManager.INSTANCE.loadPlayerInCache(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void OnPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) throws SQLException {
+        DatabaseManager.INSTANCE.clearPlayerFromCache(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
