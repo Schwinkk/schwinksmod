@@ -58,8 +58,13 @@ public class DatabaseManager {
 
     public void clearPlayerFromCache(UUID uuid) throws SQLException {
 
+        if (connection == null) {
+            Log.error("Database connection is null during learPlayerInCache");
+            return;
+        }
+
         if (!currentPlayerBags.containsKey(uuid)) {
-            Log.error("Player " + uuid.toString() + "is not found !");
+            Log.error("Player " + uuid.toString() + "is not found");
             return;
         }
 
