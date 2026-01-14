@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jline.utils.Log;
-import org.joml.Random;
 
 import java.util.*;
 import java.util.random.RandomGenerator;
@@ -105,7 +104,9 @@ public class ShuffleBagManager {
     }
 
     private long generateSeed(){
-        return Random.newSeed();
+        long result;
+        result = new Random().nextLong();
+        return result;
     }
 
     public PlayerBagData generateBagData(String bagName, PlayerBagData data){

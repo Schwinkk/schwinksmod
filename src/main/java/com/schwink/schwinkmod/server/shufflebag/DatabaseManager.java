@@ -47,6 +47,8 @@ public class DatabaseManager {
                 playerData.setDirty(false);
 
                 currentPlayerBags.put(uuid, playerData);
+
+                System.out.println("PROGRUZ POSHEL");
             }
 
         } catch (SQLException e) {
@@ -87,6 +89,8 @@ public class DatabaseManager {
                     pstmt.executeBatch();
             }
                 connection.commit();
+
+                System.out.println("POGIB");
 
             } catch (SQLException e) {
                 Log.error("Failed to save data for player " + uuid, e);
@@ -149,14 +153,14 @@ public class DatabaseManager {
 
 
         String sqlCode = """
-            CREATE TABLE IF NOT EXISTS player_shufflebags (
-                uuid         TEXT NOT NULL,
-                bag_id       TEXT NOT NULL,
-                seed         INTEGER      NOT NULL,
-                opened_count INTEGER     DEFAULT 0,
+                CREATE TABLE IF NOT EXISTS player_shufflebags (
+                                uuid         TEXT NOT NULL,
+                                bag_id       TEXT NOT NULL,
+                                seed         INTEGER      NOT NULL,
+                                opened_count INTEGER     DEFAULT 0,
             
-                PRIMARY KEY (uuid, bag_id)
-            );
+                                PRIMARY KEY (uuid, bag_id)
+                            );
             """;
 
         try (Statement stmt = connection.createStatement()) {
