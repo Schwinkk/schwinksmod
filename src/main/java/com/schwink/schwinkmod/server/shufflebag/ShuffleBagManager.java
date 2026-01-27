@@ -41,7 +41,7 @@ public class ShuffleBagManager {
         PlayerBagData playerBagData = DatabaseManager.INSTANCE.currentPlayerBags.get(uuid);
 
         if (playerBagData == null || playerBagData.getBags().get(bagName) == null){
-            playerBagData = generateBagData(bagName, playerBagData);
+            playerBagData = generateBagData(bagName);
         }
 
         BagInfo currentBag = playerBagData.getBags().get(bagName);
@@ -50,6 +50,9 @@ public class ShuffleBagManager {
         int indexOfItem = arrayFromSeed(currentBag.getSeed(),bagName)
                 .get(currentBag.getCount());
 
+        if (){
+
+        }
 
         ShuffleBagEntry bagEntry = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName).get(indexOfItem);
 
@@ -64,7 +67,7 @@ public class ShuffleBagManager {
             if (location == null){
                 Log.error("item name in JSON is INCORRECT");
 
-                result = ItemStack.EMPTY;
+                return ItemStack.EMPTY;
             }
             else {
                 Item item = BuiltInRegistries.ITEM.getValue(location);
@@ -109,12 +112,9 @@ public class ShuffleBagManager {
         return result;
     }
 
-    public PlayerBagData generateBagData(String bagName, PlayerBagData data){
+    private PlayerBagData generateBagData(String bagName){
 
-        if (data == null){
-            data = new PlayerBagData();
-        }
-
+        PlayerBagData data = new PlayerBagData();
         BagInfo bagInfo = new BagInfo();
 
         bagInfo.setCount(0);
