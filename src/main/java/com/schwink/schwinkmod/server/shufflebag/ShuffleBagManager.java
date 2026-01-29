@@ -1,12 +1,9 @@
 package com.schwink.schwinkmod.server.shufflebag;
 
-import com.schwink.schwinkmod.common.Config;
 import com.schwink.schwinkmod.common.DataTypes.PlayerBagData;
 import com.schwink.schwinkmod.common.DataTypes.BagInfo;
 import com.schwink.schwinkmod.common.DataTypes.ShuffleBagEntry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,8 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jline.utils.Log;
 
 import java.util.*;
@@ -50,8 +45,9 @@ public class ShuffleBagManager {
         int indexOfItem = arrayFromSeed(currentBag.getSeed(),bagName)
                 .get(currentBag.getCount());
 
-        if (){
-
+        if (indexOfItem < 0 || indexOfItem > ShuffleBagJsonParser.INSTANCE.getShuffleSize(bagName)){
+            resetBagCounter(playerBagData, bagName);
+            indexOfItem = 0;
         }
 
         ShuffleBagEntry bagEntry = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName).get(indexOfItem);
@@ -107,9 +103,7 @@ public class ShuffleBagManager {
     }
 
     private long generateSeed(){
-        long result;
-        result = new Random().nextLong();
-        return result;
+        return new Random().nextLong();
     }
 
     private PlayerBagData generateBagData(String bagName){
@@ -130,10 +124,7 @@ public class ShuffleBagManager {
         int currentCount = data.getBags().get(bagName).getCount();
 
         if (currentCount >= ShuffleBagJsonParser.INSTANCE.getShuffleSize(bagName) - 1){
-            currentCount = 0;
-
-            data.getBags().get(bagName).setSeed(generateSeed());
-            data.getBags().get(bagName).setCount(currentCount);
+            resetBagCounter(data, bagName);
         }
         else{
             currentCount++;
@@ -142,5 +133,10 @@ public class ShuffleBagManager {
         }
 
         return data;
+    }
+
+    private void resetBagCounter(PlayerBagData data, String bagName){
+        data.getBags().get(bagName).setSeed(generateSeed());
+        data.getBags().get(bagName).setCount(0);
     }
 }
