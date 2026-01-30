@@ -88,9 +88,9 @@ public class ShuffleBagManager {
         ArrayList<Integer> result = new ArrayList<>();
         List<ShuffleBagEntry> entries = ShuffleBagJsonParser.INSTANCE.getShuffleBag(bagName);
 
-        for (ShuffleBagEntry entry : entries) {
-            for (int i = 0; i < entry.amount(); i++){
-                result.add(entries.indexOf(entry));
+        for (int j = 0; j < entries.size(); j++) {
+            for (int i = 0; i < entries.get(j).amount(); i++){
+                result.add(j);
             }
         }
 
