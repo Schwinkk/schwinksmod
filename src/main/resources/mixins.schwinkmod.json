@@ -4,7 +4,8 @@
   "package": "com.schwink.schwinkmod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "HitMarkerMixin"
+    "HitMarkerMixin",
+    "ZombieAIMixin"
   ],
   "injectors": {
     "defaultRequire": 1
