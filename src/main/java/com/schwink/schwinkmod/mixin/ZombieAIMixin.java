@@ -9,15 +9,28 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
+
+import java.util.ArrayList;
 
 @Mixin(Zombie.class)
 public class ZombieAIMixin extends Monster {
 
     protected ZombieAIMixin(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Unique
+    public ArrayList<ItemStack> harvestedCrops = new ArrayList<ItemStack>();
+
+    @Unique
+    public void addToHarvestedCrops(ItemStack crop){
+        harvestedCrops.add(crop);
     }
 
     @Overwrite()
