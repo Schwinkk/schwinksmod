@@ -1,36 +1,49 @@
 package com.schwink.schwinkmod.mixin;
 
+import com.google.common.primitives.Ints;
+import com.schwink.schwinkmod.common.AiGoals.CropFaremer;
 import com.schwink.schwinkmod.common.AiGoals.DropCropsGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Mixin(Zombie.class)
-public class ZombieAIMixin extends Monster {
+public class ZombieAIMixin extends Monster implements CropFaremer {
 
     protected ZombieAIMixin(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
     }
 
     @Unique
-    public ArrayList<ItemStack> harvestedCrops = new ArrayList<ItemStack>();
+    protected ArrayList<Integer> harvestedCrops = new ArrayList<>();
 
     @Unique
-    public void addToHarvestedCrops(ItemStack crop){
-        harvestedCrops.add(crop);
+    public void decreaseCrops() {
+        harvestedCrops.removeFirst();
+    }
+
+    @Unique
+    public void increaseCrops(Integer itemId) {
+        harvestedCrops.addLast(itemId);
     }
 
     @Overwrite()
@@ -63,4 +76,24 @@ public class ZombieAIMixin extends Monster {
     protected boolean isSunSensitive(){
         return false;
     }
+
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    public void saveHarvestData(ValueOutput output, CallbackInfo ci){
+
+        int[] data = new int[harvestedCrops.size()];
+        for (int i = 0; i < data.length; i++){
+            data[i] = harvestedCrops.get(i);
+        }
+
+        output.putIntArray("harvestedCrops", data);
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    public void readHarvestData(ValueInput input, CallbackInfo ci){
+
+        this.harvestedCrops = input.getIntArray("harvestedCrops")
+                .map(array -> new ArrayList<>(Ints.asList(array))).orElse(new ArrayList<>());
+    }
+
+
 }
