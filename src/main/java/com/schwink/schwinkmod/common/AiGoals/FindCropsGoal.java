@@ -1,12 +1,17 @@
 package com.schwink.schwinkmod.common.AiGoals;
 
 import com.google.common.collect.Lists;
+import com.schwink.schwinkmod.mixin.ZombieAIMixin;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nullable;
@@ -32,16 +37,30 @@ public class FindCropsGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
-
-        if (mob instanceof Zombie zombie){
-
-        }
         return false;
     }
 
     @Override
     protected boolean isValidTarget(LevelReader levelReader, BlockPos blockPos) {
-        return false;
+        BlockState state = levelReader.getBlockState(blockPos);
+
+        if (!state.is(BlockTags.CROPS)){
+            return false;
+        }
+
+        if (state.getBlock() instanceof CropBlock crop){
+            if (!crop.isMaxAge(state)){
+                return false;
+            }
+        }
+
+        if (levelReader instanceof ServerLevel serverLevel){
+            if (!serverLevel.isVillage(blockPos)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
