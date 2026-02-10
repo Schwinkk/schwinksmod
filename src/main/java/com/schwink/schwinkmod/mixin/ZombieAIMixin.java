@@ -1,7 +1,8 @@
 package com.schwink.schwinkmod.mixin;
 
 import com.google.common.primitives.Ints;
-import com.schwink.schwinkmod.common.AiGoals.CropFaremer;
+import com.schwink.schwinkmod.common.AiGoals.FindCropsGoal;
+import com.schwink.schwinkmod.common.AiGoals.ICropFaremer;
 import com.schwink.schwinkmod.common.AiGoals.DropCropsGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -21,13 +22,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Mixin(Zombie.class)
-public class ZombieAIMixin extends Monster implements CropFaremer {
+public class ZombieAIMixin extends Monster implements ICropFaremer {
 
     protected ZombieAIMixin(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -48,9 +45,10 @@ public class ZombieAIMixin extends Monster implements CropFaremer {
 
     @Overwrite()
     protected void registerGoals(){
-        // move through vilage to find crops
+        this.goalSelector.addGoal(1, new FindCropsGoal(this, 1, 15,4));
         // collect all crops
         // move through village to drop collected items
+
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.addBehaviourGoals();
@@ -94,6 +92,5 @@ public class ZombieAIMixin extends Monster implements CropFaremer {
         this.harvestedCrops = input.getIntArray("harvestedCrops")
                 .map(array -> new ArrayList<>(Ints.asList(array))).orElse(new ArrayList<>());
     }
-
 
 }
