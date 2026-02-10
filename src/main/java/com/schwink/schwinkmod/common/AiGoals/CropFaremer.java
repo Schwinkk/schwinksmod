@@ -4,7 +4,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 
-public interface ICropFaremer {
+public interface CropFaremer {
     ArrayList<Integer> harvestedCrops = null;
     void decreaseCrops();
     void increaseCrops(Integer itemId);
