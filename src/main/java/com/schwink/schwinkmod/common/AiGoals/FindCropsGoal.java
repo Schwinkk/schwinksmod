@@ -27,19 +27,10 @@ import java.util.function.BooleanSupplier;
 public class FindCropsGoal extends MoveToBlockGoal {
 
     protected final PathfinderMob mob;
-    private final double speedModifier;
-    @Nullable
-    private Path path;
-    private BlockPos poiPos;
-    private final List<BlockPos> visited = Lists.newArrayList();
-    private final int distanceToPoi;
 
-
-    public FindCropsGoal(PathfinderMob mob, double speedModifier, int searchRange, int distanceToPoi) {
-        super(mob, speedModifier, searchRange);
+    public FindCropsGoal(PathfinderMob mob, double speedModifier, int searchRange, int verticalSearch) {
+        super(mob, speedModifier, searchRange, verticalSearch);
         this.mob = mob;
-        this.speedModifier = speedModifier;
-        this.distanceToPoi = distanceToPoi;
         if (!GoalUtils.hasGroundPathNavigation(mob)) {
             throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
         }

@@ -1,6 +1,7 @@
 package com.schwink.schwinkmod.mixin;
 
 import com.google.common.primitives.Ints;
+import com.schwink.schwinkmod.common.AiGoals.CollectCropsGoal;
 import com.schwink.schwinkmod.common.AiGoals.FindCropsGoal;
 import com.schwink.schwinkmod.common.AiGoals.ICropFarmer;
 import com.schwink.schwinkmod.common.AiGoals.DropCropsGoal;
@@ -45,8 +46,8 @@ public class ZombieAIMixin extends Monster implements ICropFarmer {
 
     @Overwrite()
     protected void registerGoals(){
-        this.goalSelector.addGoal(1, new FindCropsGoal(this, 1, 8,4));
-        // collect all crops
+        this.goalSelector.addGoal(2, new FindCropsGoal(this, 1, 10,2));
+        this.goalSelector.addGoal(1, new CollectCropsGoal(this,1));
         // move through village to drop collected items
 
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
